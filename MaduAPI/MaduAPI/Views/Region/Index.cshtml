@@ -1,0 +1,149 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<body>
+    <h2>Index</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <td>ID</td>
+                <td>Name</td>
+                <td>Edit</td>
+                <td>Delete</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <br />
+    <div class="panel panel-defalut">
+        <div class="panel-heading"><strong>Add or Update Region</strong></div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label>Region ID</label>
+                <input type="text" class="form-control" id="rid" />
+            </div>
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" class="form-control" id="rname" />
+            </div>
+        </div>
+        <div class="panel-footer" id="saveDiv" >
+            <input type="button" value="Save" class="btn btn-primary" id="savebtn" />
+        </div>
+        <div class="panel-footer" id="updateDiv" hidden="hidden">
+            <input type="button" value="Update" class="btn btn-primary" id="updatebtn"/>
+            <input type="button" value="Cancel" class="btn btn-primary" id="cancelbtn" />
+        </div>
+
+    </div>
+
+
+</body>
+@Scripts.Render("~/bundles/jquery")
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:54764/api/regionapi',
+            dataType: 'json',
+            success: function (data) {
+                var tbody = $('table tbody');
+                $.each(data, function (index, value) {
+                    tbody.append("<tr><td>" + value.regionID + "</td><td>" + value.regionDescription + '<td><input type="button" value="Edit" ID="' + value.regionID + '" class="btn btn-success edit-item"/></td>' + '<td><input type="button" value="Delete" ID="' + value.regionID + '" class="btn btn-danger remove-item"/></td>')
+                });
+
+            },
+            error: function () {
+                alert('Get Error')
+            }
+        });
+        $('#savebtn').click(function () {
+            var Region = {};
+            Region.regionID = $("#rid").val();
+            Region.regionDescription = $("#rname").val();
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:54764/api/regionapi/InsertRegion',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(Region),
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert('Save Error')}
+
+
+            });
+        });
+        $("body").on("click", ".remove-item", function () {
+            var id = this.id;
+            if (confirm("Do you really want to delete this?")) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: 'http://localhost:54764/api/regionapi/DeleteRegion' + '?=' + id,
+                    success: function () {
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('Remove Error')
+                    }
+                })
+            }
+        })
+        $("body").on("click", ".edit-item", function () {
+            var id = this.id;
+            var item = {};
+            $("#saveDiv").hide();
+            $("#updateDiv").show();
+            $.ajax({
+                type: 'Get',
+                url: 'http://localhost:54764/api/regionapi/GetById' + '?=' + id, 
+                dataType: 'json',
+                success: function (data) {
+                    item = data;
+                    $("#rid").val(item.regionID);
+                    $("#rname").val($.trim(item.regionDescription));
+                    $.trim
+                },
+                error: function () {
+                    alert('Edit Error')
+                }
+            });
+            
+            
+        });
+        $('#updatebtn').click(function () {
+            var Region = {};
+            Region.regionID = $("#rid").val();
+            Region.regionDescription = $("#rname").val();
+            if (confirm("Do you really want to update this?")) {
+                $.ajax({
+                    type: 'delete',
+                    url: 'http://localhost:54764/api/regionapi/DeleteRegion' + '?=' + Region.regionID,
+                    success: function () {
+                        $.ajax({
+                            type: 'POST',
+                            url: 'http://localhost:54764/api/regionapi/InsertRegion',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(Region),
+                            success: function () {
+                                location.reload();
+                            },
+                            error: function () {
+                                alert('Save Error')
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('Remove Error')
+                    }
+
+                });
+            }
+        });
+
+        $('#cancelbtn').click(function () { location.reload(); });
+    });
+</script>
+
