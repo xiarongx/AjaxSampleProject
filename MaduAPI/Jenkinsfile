@@ -8,7 +8,7 @@ node('master') {
 
         stage('Build'){
             bat 'nuget.exe restore HelloWorld.sln'
-            bat "\"${tool 'MSBuild-15.0'}\" MaduAPI/MaduAPI.sln /p:DeployOnBuild=true /p:PublishProfile=MaduAPI/MaduAPI/Properties/PublishProfiles/FolderProfile.pubxml
+            bat "\"${tool 'MSBuild-15.0'}\" MaduAPI/MaduAPI.sln /p:DeployOnBuild=true /p:PublishProfile=MaduAPI/MaduAPI/Properties/PublishProfiles/FolderProfile.pubxml"
         }
 
         stage('Archive'){
