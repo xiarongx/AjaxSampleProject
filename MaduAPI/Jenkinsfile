@@ -12,7 +12,10 @@ node('master') {
         }
 
         stage('Archive'){
-            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/**/.*"
+            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/*"
+            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/**/*"
+            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/**/**/*"
+            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/**/**/**/*"
         }
     }
     catch(error){
