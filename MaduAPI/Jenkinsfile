@@ -1,0 +1,29 @@
+#!/user/bin/env groovy
+
+node('master') {
+    try {
+        stage('Checkout'){
+            checkout scm
+        }
+
+        stage('Build'){
+            bat 'nuget.exe restore HelloWorld.sln'
+            bat "\"${tool 'MSBuild-15.0'}\" MaduAPI\MaduAPI.sln /p:DeployOnBuild=true /p:PublishProfile=C:\MaduAPI\MaduAPI\Properties\PublishProfiles\FolderProfile.pubxml
+        }
+
+        stage('Archive'){
+            archiveArtifacts "MaduAPI/MaduAPI/bin/Release/**/.*"
+        }
+    }
+    catch(error){
+        mail body: "project build error is here: ${env.BUILD_URL}", 
+                        subject: 'pipeline test email: fail', 
+                        to: 'cxu@acr.org'
+        throw error
+    }
+    finally{
+        mail body: 'project build successful', 
+                        subject: 'pipeline test email: successful', 
+                        to: 'cxu@acr.org'
+    }
+}
