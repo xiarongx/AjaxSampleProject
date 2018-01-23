@@ -14,6 +14,10 @@ node('master') {
         stage('Archive'){
             archiveArtifacts "MaduAPI/MaduAPI/bin/Release/PublishOutput/**/*.*"
         }
+        
+        mail body: 'project build successful', 
+                        subject: 'pipeline test email: successful', 
+                        to: 'cxu@acr.org'
     }
     catch(error){
         mail body: "project build error is here: ${env.BUILD_URL}", 
@@ -22,8 +26,6 @@ node('master') {
         throw error
     }
     finally{
-        mail body: 'project build successful', 
-                        subject: 'pipeline test email: successful', 
-                        to: 'cxu@acr.org'
+        
     }
 }
